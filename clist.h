@@ -19,7 +19,8 @@ struct CList;
 typedef struct CList CList;
 
 /* Initialize the first node in the linked list. */
-extern struct CList *clist_init(void);
+extern struct CList *clist_init(short int type, void *data,
+    void (*free_fn)(void *data));
 
 /* Add node to linked list. */
 extern int clist_add(struct CList **head, short int type, void *data,

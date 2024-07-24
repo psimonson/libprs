@@ -22,29 +22,22 @@ struct CList {
     void (*free)(void *data);
 };
 
-/* Create a new node for the linked list.
+/* Initialize the linked list node.
  */
-static struct CList *clist_new(short unsigned int type, void *data,
-	void (*free_fn)(void *data))
+struct CList *clist_init(short int type, void *data,
+    void (*free_fn)(void *data))
 {
     struct CList *obj;
 
-    obj = (struct CList *)malloc(sizeof(struct CList));
+    obj = (struct CList *)calloc(1, sizeof(struct CList));
     if(obj != NULL) {
-	obj->type = (type < CLIST_TYPE_COUNT)
-		    ? type : CLIST_TYPE_UNKNOWN;
-	obj->data = data;
-	obj->free = free_fn != NULL ? free_fn : NULL;
-	obj->next = NULL;
+        obj->type = (type >= 0 && type < CLIST_TYPE_COUNT)
+                    ? type : CLIST_TYPE_UNKNOWN;
+        obj->data = data;
+        obj->free = free_fn != NULL ? free_fn : free;
+        obj->next = NULL;
     }
     return obj;
-}
-
-/* Initialize the linked list node.
- */
-struct CList *clist_init(void)
-{
-    return NULL;
 }
 
 /* Add node to the linked list.
@@ -54,21 +47,13 @@ int clist_add(struct CList **head, short int type, void *data,
 {
     struct CList *tmp, *node;
 
-    if((*head) == NULL) {
-	node = clist_new(type, data, free_fn);
-	if(node != NULL) {
-		*head = node;
-	}
-    }
-    else {
-	node = clist_new(type, data, free_fn);
-	if(node != NULL) {
-		tmp = *head;
-		while(tmp->next != NULL) {
-		    tmp = tmp->next;
-		}
-		tmp->next = node;
-	}
+    node = clist_init(type, data, free_fn);
+    if(node != NULL) {
+        tmp = *head;
+        while(tmp->next != NULL) {
+            tmp = tmp->next;
+        }
+        tmp->next = node;
     }
     
     return (node != NULL);
@@ -78,11 +63,15 @@ int clist_add(struct CList **head, short int type, void *data,
  */
 void clist_free(struct CList *obj)
 {
-    while(obj != NULL) {
-	struct CList *next = obj->next;
-	if(obj->free != NULL) obj->free(obj->data);
-	free(obj);
-	obj = next;
+    if(obj != NULL) {
+        while(obj->next != NULL) {
+            struct CList *next = obj->next;
+            obj->free(obj->data);
+            free(obj);
+            obj = next;
+        }
+        obj->free(obj->data);
+        free(obj);
     }
 }
 
@@ -91,7 +80,7 @@ void clist_free(struct CList *obj)
 short int clist_gettype(struct CList *obj)
 {
     if(obj != NULL) {
-	return obj->type;
+        return obj->type;
     }
     return -1;
 }
@@ -101,7 +90,7 @@ short int clist_gettype(struct CList *obj)
 struct CList *clist_getnext(struct CList *obj)
 {
     if(obj != NULL) {
-	return obj->next;
+        return obj->next;
     }
     return NULL;
 }
@@ -111,7 +100,7 @@ struct CList *clist_getnext(struct CList *obj)
 void *clist_getdata(struct CList *obj)
 {
     if(obj != NULL) {
-	return obj->data;
+        return obj->data;
     }
     return NULL;
 }
