@@ -16,17 +16,20 @@ PREFIX?=/usr
 HEADER_TARGETS=\
     byte_order.h\
     abuffer.h\
-	debug.h\
     clist.h\
+    clog.h\
     ctest.h\
-    vector.h\
-	ui.h\
-	ui_menu.h\
-	ui_util.h\
-	network.h\
-	netutil.h\
-	getstr.h\
-	readln.h
+    debug.h\
+    file.h\
+    getstr.h\
+    readln.h\
+    netutil.h\
+    network.h\
+    tpool.h\
+    ui.h\
+    ui_menu.h\
+    ui_util.h\
+    vector.h
 
 .PHONY: all install remove clean distclean dist
 all: $(TARGET)
