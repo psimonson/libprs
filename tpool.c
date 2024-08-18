@@ -206,7 +206,7 @@ void tpool_wait(ThreadPool *tp)
 
 	pthread_mutex_lock(&tp->task_mutex);
 	for(;;) {
-		if((!tp->stop && tp->ntasks != 0) || (tp->stop && tp->nthreads != 0)) {
+		if((!tp->stop && tp->ntasks != 0) || (!tp->stop && tp->nthreads != 0)) {
 			pthread_cond_wait(&tp->working_cond, &tp->task_mutex);
 		}
 		else {

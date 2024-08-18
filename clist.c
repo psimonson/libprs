@@ -49,11 +49,15 @@ int clist_add(struct CList **head, short int type, void *data,
 
     node = clist_init(type, data, free_fn);
     if(node != NULL) {
-        tmp = *head;
-        while(tmp->next != NULL) {
-            tmp = tmp->next;
-        }
-        tmp->next = node;
+		if(*head == NULL) {
+			*head = node;
+		} else {
+        	tmp = *head;
+        	while(tmp->next != NULL) {
+        	    tmp = tmp->next;
+        	}
+        	tmp->next = node;
+		}
     }
     
     return (node != NULL);
