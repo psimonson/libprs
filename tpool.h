@@ -1,32 +1,37 @@
 /*
- * tpool.h - Header for simple thread pool implementation.
+ * threadpool.h - Header for a simple thread pool implementation.
  *
  * Author: Philip R. Simonson
- * Date  : 07/31/2022
+ * Date  : 06/29/2021
+ *
+ ****************************************************************************
+ *
+ * Changes:
+ *    - Redesigned 06/30/2021 - Now uses a linked list.
  *
  ****************************************************************************
  */
 
-#ifndef _TPOOL_H_
-#define _TPOOL_H_
+#ifndef THREADPOOL_H
+#define THREADPOOL_H
 
-/* Thread pool structure forward declaration and typedef. */
-struct ThreadPool;
-typedef struct ThreadPool ThreadPool;
+#include <stdbool.h>
+#include <stddef.h>
 
-/* Thread pool work function. */
+struct threadpool;
+typedef struct threadpool threadpool_t;
+
+/* Thread pool task function typedef. */
 typedef void (*thread_func_t)(void *arg);
 
-/* Initialize a thread pool. */
-extern ThreadPool *tpool_create(unsigned int nthreads);
+/* Create a thread pool. */
+threadpool_t *threadpool_create(size_t num);
+/* Destroy the thread pool. */
+void threadpool_destroy(threadpool_t *tp);
 
-/* Add task to thread pool. */
-extern int tpool_addtask(ThreadPool *tp, thread_func_t func, void *data);
-
-/* Wait for all tasks to be completed. */
-extern void tpool_wait(ThreadPool *tp);
-
-/* Destroy a thread pool. */
-extern void tpool_destroy(ThreadPool *tp);
+/* Add a task to the thread pool. */
+bool threadpool_add_task(threadpool_t *tp, thread_func_t func, void *arg);
+/* Wait for all tasks to finish. */
+void threadpool_wait(threadpool_t *tp);
 
 #endif
